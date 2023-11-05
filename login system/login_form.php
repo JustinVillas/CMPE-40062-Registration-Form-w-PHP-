@@ -1,15 +1,23 @@
 <?php
 
+
+// Report all PHP errors
+error_reporting(E_ALL);
+// Same as error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 @include 'config.php';
 
 session_start();
+
 
 if(isset($_POST['submit'])){
 
    $name = mysqli_real_escape_string($conn, $_POST['name']);
    $email = mysqli_real_escape_string($conn, $_POST['email']);
-   $pass = md5($_POST['password']);
-   $cpass = md5($_POST['cpassword']);
+   $bday = date('Y-m-d',strtotime($_POST['birthdate']));
+   $pass =  md5($_POST['password']);
+   $cpass =  md5($_POST['cpassword']);
    $user_type = $_POST['user_type'];
 
    $select = " SELECT * FROM user_form WHERE email = '$email' && password = '$pass' ";
@@ -20,23 +28,22 @@ if(isset($_POST['submit'])){
 
       $row = mysqli_fetch_array($result);
 
-      if($row['user_type'] == 'admin'){
-
-         $_SESSION['admin_name'] = $row['name'];
-         header('location:admin_page.php');
-
-      }elseif($row['user_type'] == 'user'){
+      if($row['user_type'] == 'user'){
 
          $_SESSION['user_name'] = $row['name'];
+         $_SESSION['user_email'] = $row['email'];
+         $_SESSION['user_bday'] = $row['birthdate'];
          header('location:user_page.php');
 
       }
      
-   }else{
+   }else{  
       $error[] = 'incorrect email or password!';
+      
    }
 
 };
+
 ?>
 
 <!DOCTYPE html>
@@ -52,7 +59,6 @@ if(isset($_POST['submit'])){
 
 </head>
 <body>
-   
 <div class="form-container">
 
    <form action="" method="post">
@@ -71,6 +77,7 @@ if(isset($_POST['submit'])){
    </form>
 
 </div>
+
 
 </body>
 </html>
